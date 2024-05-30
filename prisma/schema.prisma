@@ -1,0 +1,22 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Bet {
+  id          Int      @id @default(autoincrement())
+  bettor      String
+  action      String
+  amount      String
+  txnHash     String
+  randHash    Json
+  pseudoHash  String
+  hash        String
+  hasWon      Boolean
+  finalizeTxn String
+  createdAt   DateTime @default(now())
+}

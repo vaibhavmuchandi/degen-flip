@@ -10,6 +10,7 @@ import { seededRandom, randomString, combineHashes } from '../_utils/utils'
 import { privateKeyToAccount } from 'viem/accounts';
 import { baseSepolia } from 'viem/chains';
 import abi from "../_utils/abi.json"
+import prisma from '../../../lib/prisma';
 
 const app = new Frog({
   assetsPath: "/",
@@ -158,6 +159,20 @@ app.frame("/bet/:action/:amount/:multiplier", async (c) => {
     args: [bettor, choice, multiplier, hash, result]
   })
   const finalizeTxn = await walletClient.writeContract(finalize);
+
+  await prisma.bet.create({
+    data: {
+      bettor,
+      action,
+      amount,
+      txnHash: txnHash as string,
+      randHash,
+      pseudoHash: psuedoHash,
+      hash,
+      hasWon,
+      finalizeTxn
+    }
+  });
 
   const imageUrl = hasWon ? <img src='https://degen-flip-base.vercel.app/3.png' /> : <img src='https://degen-flip-base.vercel.app/4.png' />
 

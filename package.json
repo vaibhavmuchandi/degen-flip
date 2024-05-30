@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@prisma/client": "^5.14.0",
     "frog": "latest",
     "hono": "^4",
     "js-sha3": "^0.9.3",
