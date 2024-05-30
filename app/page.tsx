@@ -8,14 +8,7 @@ export async function generateMetadata(): Promise<Metadata> {
     `${process.env.VERCEL_URL || 'http://localhost:3000'}/api`,
   )
   return {
-    other: frameTags,
-    openGraph: {
-      images: [
-        {
-          url: `${`${process.env.VERCEL_URL || 'http://localhost:3000'}`}/favicon.png`,
-        },
-      ],
-    }
+    other: frameTags
   }
 }
 

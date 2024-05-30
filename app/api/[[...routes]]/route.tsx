@@ -10,12 +10,20 @@ import { seededRandom, randomString, combineHashes } from '../_utils/utils'
 import { privateKeyToAccount } from 'viem/accounts';
 import { baseSepolia } from 'viem/chains';
 import abi from "../_utils/abi.json"
+import { neynar } from 'frog/hubs';
+import Img1 from "../_images/1.png"
+import Img2 from "../_images/2.png"
+import Img3 from "../_images/3.png"
+import img4 from "../_images/4.png"
 
 const app = new Frog({
   assetsPath: '/',
   basePath: '/api',
   // Supply a Hub to enable frame verification.
-  // hub: neynar({ apiKey: 'NEYNAR_FROG_FM' })
+  hub: neynar({ apiKey: 'NEYNAR_FROG_FM' }),
+  imageOptions: {
+    format: 'png'
+  }
 })
 
 // Uncomment to use Edge Runtime
@@ -42,8 +50,7 @@ const walletClient = createWalletClient({
 app.frame("/", async (c) => {
   return c.res({
     action: `/select-multipler`,
-    image:
-      `${NEXT_URL}/1.png`,
+    image: Img1.src,
     imageAspectRatio: "1.91:1",
     intents: [
       <TextInput placeholder="Amount $DEGEN" />,
@@ -66,7 +73,7 @@ app.frame("/select-multipler", async (c) => {
   if (buttonValue == "sponsor" && inputText) {
     return c.res({
       action: '/',
-      image: `${NEXT_URL}/1.png`,
+      image: Img1.src,
       imageAspectRatio: "1.91:1",
       intents: [
         <Button>
@@ -81,7 +88,7 @@ app.frame("/select-multipler", async (c) => {
   if (inputText && inputText > "1000") {
     return c.res({
       action: `/`,
-      image: `${NEXT_URL}/1.png`,
+      image: Img1.src,
       imageAspectRatio: "1.91:1",
       intents: [
         <Button>
@@ -92,7 +99,7 @@ app.frame("/select-multipler", async (c) => {
   }
   return c.res({
     action: `/flip/${buttonValue}/${encodeURI(inputText as string)}`,
-    image: `${NEXT_URL}/2.png`,
+    image: Img2.src,
     imageAspectRatio: "1.91:1",
     intents: [
       <Button value='125'>
@@ -118,7 +125,7 @@ app.frame('/flip/:action/:amount', async (c) => {
   const amount = c.req.param('amount')
   return c.res({
     action: `/bet/${action}/${amount}/${multiplier}`,
-    image: `${NEXT_URL}/2.png`,
+    image: Img2.src,
     imageAspectRatio: "1.91:1",
     intents: [
       <Button.Transaction target={`/bet/${amount}`}>
@@ -164,7 +171,7 @@ app.frame("/bet/:action/:amount/:multiplier", async (c) => {
 
   return c.res({
     action: "/",
-    image: `${NEXT_URL}/${hasWon ? "3.png" : "4.png"}`,
+    image: `${NEXT_URL}/${hasWon ? Img3.src : img4.src}`,
     imageAspectRatio: "1.91:1",
     intents: [
       hasWon && <Button.Link href='https://warpcast.com/~/compose?text=Woohooo%21+Just+doubled+my+%24DEGEN+on+Degen+Flip.+Flip+coin+to+double+your+%24DEGEN+now%21+%2Fdegen-house-casino'>Share! (10% bonus)</Button.Link>,
