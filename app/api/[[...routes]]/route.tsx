@@ -21,6 +21,8 @@ const app = new Frog({
 // Uncomment to use Edge Runtime
 // export const runtime = 'edge'
 
+const NEXT_URL = process.env.VERCEL_URL || "http://localhost:3000"
+
 const account = privateKeyToAccount(process.env.PRIVATE_KEY as "0x");
 const contractAddress = process.env.CONTRACT_ADDRESS as "0x"
 const blockExplorer = process.env.BLOCK_EXPLORER
@@ -40,7 +42,7 @@ const walletClient = createWalletClient({
 app.frame("/", async (c) => {
   return c.res({
     action: `/select-multipler`,
-    image: <img src='https://degen-flip-base.vercel.app/1.png' />,
+    image: <img src={`${NEXT_URL}/1.png`} />,
     imageAspectRatio: "1.91:1",
     intents: [
       <TextInput placeholder="Amount $DEGEN" />,
@@ -63,7 +65,7 @@ app.frame("/select-multipler", async (c) => {
   if (buttonValue == "sponsor" && inputText) {
     return c.res({
       action: '/',
-      image: <img src='https://degen-flip-base.vercel.app/1.png' />,
+      image: <img src={`${NEXT_URL}/1.png`} />,
       imageAspectRatio: "1.91:1",
       intents: [
         <Button>
@@ -78,7 +80,7 @@ app.frame("/select-multipler", async (c) => {
   if (inputText && inputText > "1000") {
     return c.res({
       action: `/`,
-      image: <img src='https://degen-flip-base.vercel.app/1.png' />,
+      image: <img src={`${NEXT_URL}/1.png`} />,
       imageAspectRatio: "1.91:1",
       intents: [
         <Button>
@@ -89,7 +91,7 @@ app.frame("/select-multipler", async (c) => {
   }
   return c.res({
     action: `/flip/${buttonValue}/${encodeURI(inputText as string)}`,
-    image: <img src='https://degen-flip-base.vercel.app/2.png' />,
+    image: <img src={`${NEXT_URL}/2.png`} />,
     imageAspectRatio: "1.91:1",
     intents: [
       <Button value='125'>
@@ -115,7 +117,7 @@ app.frame('/flip/:action/:amount', async (c) => {
   const amount = c.req.param('amount')
   return c.res({
     action: `/bet/${action}/${amount}/${multiplier}`,
-    image: <img src='https://degen-flip-base.vercel.app/2.png' />,
+    image: <img src={`${NEXT_URL}/2.png`} />,
     imageAspectRatio: "1.91:1",
     intents: [
       <Button.Transaction target={`/bet/${amount}`}>
@@ -159,7 +161,7 @@ app.frame("/bet/:action/:amount/:multiplier", async (c) => {
   })
   const finalizeTxn = await walletClient.writeContract(finalize);
 
-  const imageUrl = hasWon ? <img src='https://degen-flip-base.vercel.app/3.png' /> : <img src='https://degen-flip-base.vercel.app/4.png' />
+  const imageUrl = hasWon ? <img src={`${NEXT_URL}/3.png`} /> : <img src={`${NEXT_URL}/4.png`} />
 
   return c.res({
     action: "/",
