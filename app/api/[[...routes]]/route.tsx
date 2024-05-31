@@ -17,6 +17,14 @@ const app = new Frog({
   basePath: `/api`,
   // Supply a Hub to enable frame verification.
   // hub: neynar({ apiKey: 'NEYNAR_FROG_FM' }),
+  hub: {
+    apiUrl: "https://hubs.airstack.xyz",
+    fetchOptions: {
+      headers: {
+        "x-airstack-hubs": process.env.AIRSTACK_API as string,
+      }
+    }
+  },
   imageOptions: {
     format: "png"
   }
@@ -280,7 +288,7 @@ app.frame("/bet/:action/:amount/:multiplier", async (c) => {
         <Button.Link href={`${blockExplorer}/tx/${finalizeTxn}`}>
           View on Degen Chain explorer
         </Button.Link>,
-        <Button.Link href={`https://warpcast.com/~/compose?text=Flip+a+coin+and+win+upto+5x+%24DEGEN%21&embeds[]=https://degen-flip.vercel.app/api`}>
+        <Button.Link href={`https://warpcast.com/~/compose?text=Flip+a+coin+and+win+upto+5x+%24DEGEN%21+I+just+won+${String(amount)}+%24DEGEN%21%21&embeds[]=https://degen-flip.vercel.app/api`}>
           Share! (10% bonus)
         </Button.Link>,
       ]
