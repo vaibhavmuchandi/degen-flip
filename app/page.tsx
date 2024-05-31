@@ -3,9 +3,13 @@ import type { Metadata } from 'next'
 
 import styles from './page.module.css'
 
+const vercelUrl = String(`${process.env.VERCEL_URL}/api`)
+const localUrl = "http://localhost:3000/api"
+
+const url = process.env.VERCEL_URL ? vercelUrl : localUrl
 export async function generateMetadata(): Promise<Metadata> {
   const frameTags = await getFrameMetadata(
-    `${process.env.VERCEL_URL || 'http://localhost:3000'}/api`,
+    url,
   )
   return {
     other: frameTags

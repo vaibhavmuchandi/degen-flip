@@ -49,14 +49,17 @@ app.frame("/", async (c) => {
     intents: [
       <TextInput placeholder="Amount $DEGEN" />,
       <Button value="heads">
-        HEAD
+        HEADS 🟡
+      </Button>,
+      <Button value="tails">
+        TAILS ⚪️
       </Button>,
       <Button value="sponsor">
         Sponsor!
       </Button>,
-      <Button value="tails">
-        TAIL
-      </Button>,
+      <Button.Link href={`https://warpcast.com/~/compose?text=Flip+a+coin+and+win+upto+5x+%24DEGEN%21&embeds[]=https://degen-flip.vercel.app/api`}>
+        Share
+      </Button.Link>,
     ],
     title: "DEGEN FLIP",
   });
@@ -245,13 +248,15 @@ app.frame("/bet/:action/:amount/:multiplier", async (c) => {
     image: imageUrl,
     imageAspectRatio: "1.91:1",
     intents: [
-      <Button.Link href='https://warpcast.com/~/compose?text=Woohooo%21+Just+doubled+my+%24DEGEN+on+Degen+Flip.+Flip+coin+to+double+your+%24DEGEN+now%21+%2Fdegen-house-casino'>Share! (10% bonus)</Button.Link>,
       <Button.Reset>
         Play Again!
       </Button.Reset>,
       <Button.Link href={`${blockExplorer}/tx/${finalizeTxn}`}>
         View on Degen Chain explorer
-      </Button.Link>
+      </Button.Link>,
+      <Button.Link href={`https://warpcast.com/~/compose?text=Flip+a+coin+and+win+upto+5x+%24DEGEN%21&embeds[]=https://degen-flip.vercel.app/api`}>
+        Share! (10% bonus)
+      </Button.Link>,
     ]
   })
 })
