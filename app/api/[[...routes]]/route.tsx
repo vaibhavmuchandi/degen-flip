@@ -17,6 +17,9 @@ const app = new Frog({
   basePath: `/api`,
   // Supply a Hub to enable frame verification.
   // hub: neynar({ apiKey: 'NEYNAR_FROG_FM' }),
+  imageOptions: {
+    format: "png"
+  }
 })
 
 // Uncomment to use Edge Runtime
@@ -41,7 +44,7 @@ const walletClient = createWalletClient({
 app.frame("/", async (c) => {
   return c.res({
     action: `/select-multipler`,
-    image: <img src='https://degen-flip-base.vercel.app/1.png' />,
+    image: <img src='https://degen-flip-base-hidden.vercel.app/1.png' />,
     imageAspectRatio: "1.91:1",
     intents: [
       <TextInput placeholder="Amount $DEGEN" />,
@@ -61,15 +64,55 @@ app.frame("/", async (c) => {
 
 app.frame("/select-multipler", async (c) => {
   const { buttonValue, inputText } = c
-  if (buttonValue == "sponsor" && inputText) {
+  if (!inputText) {
     return c.res({
-      action: '/',
-      image: <img src='https://degen-flip-base.vercel.app/1.png' />,
+      action: `/`,
+      image: <div
+        style={{
+          alignItems: 'center',
+          background: '#443664',
+          backgroundSize: '100% 100%',
+          display: 'flex',
+          flexDirection: 'column',
+          flexWrap: 'nowrap',
+          height: '100%',
+          justifyContent: 'center',
+          textAlign: 'center',
+          width: '100%',
+        }}
+      >
+        <div
+          style={{
+            color: '#d7dbde',
+            fontSize: 60,
+            fontStyle: 'normal',
+            letterSpacing: '-0.025em',
+            lineHeight: 1.4,
+            marginTop: 30,
+            padding: '0 120px',
+            whiteSpace: 'pre-wrap',
+          }}
+        >
+          Please enter a valid amount!
+        </div>
+      </div>,
       imageAspectRatio: "1.91:1",
       intents: [
         <Button>
-          Skip
-        </Button>,
+          Back
+        </Button>
+      ]
+    })
+  }
+  if (buttonValue == "sponsor" && inputText) {
+    return c.res({
+      action: '/',
+      image: <img src='https://degen-flip-base-hidden.vercel.app/1.png' />,
+      imageAspectRatio: "1.91:1",
+      intents: [
+        <Button.Reset>
+          Back
+        </Button.Reset>,
         <Button.Transaction target={`/sponsor/${encodeURI(inputText)}`}>
           Send!
         </Button.Transaction>,
@@ -79,9 +122,12 @@ app.frame("/select-multipler", async (c) => {
   if (inputText && inputText > "1000") {
     return c.res({
       action: `/`,
-      image: <img src='https://degen-flip-base.vercel.app/1.png' />,
+      image: <img src='https://degen-flip-base-hidden.vercel.app/1.png' />,
       imageAspectRatio: "1.91:1",
       intents: [
+        <Button>
+          Back
+        </Button>,
         <Button>
           Cannot fund your bet, please sponsor!
         </Button>
@@ -90,7 +136,26 @@ app.frame("/select-multipler", async (c) => {
   }
   return c.res({
     action: `/flip/${buttonValue}/${encodeURI(inputText as string)}`,
-    image: <img src='https://degen-flip-base.vercel.app/2.png' />,
+    image: <div
+      style={{
+        alignItems: 'center',
+        background: '#443664',
+        backgroundSize: '100% 100%',
+        display: 'flex',
+        flexDirection: 'column',
+        flexWrap: 'nowrap',
+        height: '100%',
+        justifyContent: 'center',
+        textAlign: 'center',
+        width: '100%',
+        color: '#d7dbde',
+        padding: "0 120px",
+        fontSize: 32
+      }}
+    >
+      <img src='https://degen-flip-base-hidden.vercel.app/2.png' />
+      <span>You can reset the parameters in the next step!</span>
+    </div>,
     imageAspectRatio: "1.91:1",
     intents: [
       <Button value='125'>
@@ -116,9 +181,12 @@ app.frame('/flip/:action/:amount', async (c) => {
   const amount = c.req.param('amount')
   return c.res({
     action: `/bet/${action}/${amount}/${multiplier}`,
-    image: <img src='https://degen-flip-base.vercel.app/2.png' />,
+    image: <img src='https://degen-flip-base-hidden.vercel.app/2.png' />,
     imageAspectRatio: "1.91:1",
     intents: [
+      <Button.Reset>
+        Reset
+      </Button.Reset>,
       <Button.Transaction target={`/bet/${amount}`}>
         Place Bet!
       </Button.Transaction>
@@ -159,32 +227,28 @@ app.frame("/bet/:action/:amount/:multiplier", async (c) => {
     args: [bettor, choice, multiplier, hash, result]
   })
   const finalizeTxn = await walletClient.writeContract(finalize);
-
-  await prisma.bet.create({
-    data: {
-      bettor,
-      action,
-      amount,
-      txnHash: txnHash as string,
-      randHash,
-      pseudoHash: psuedoHash,
-      hash,
-      hasWon,
-      finalizeTxn
-    }
-  });
-
-  const imageUrl = hasWon ? <img src='https://degen-flip-base.vercel.app/3.png' /> : <img src='https://degen-flip-base.vercel.app/4.png' />
+  const data = {
+    bettor,
+    action,
+    amount,
+    txnHash: txnHash as string,
+    randHash,
+    pseudoHash: psuedoHash,
+    hash,
+    hasWon,
+    finalizeTxn
+  }
+  saveToDb(data)
+  const imageUrl = hasWon ? <img src='https://degen-flip-base-hidden.vercel.app/3.png' /> : <img src='https://degen-flip-base-hidden.vercel.app/4.png' />
 
   return c.res({
-    action: "/",
     image: imageUrl,
     imageAspectRatio: "1.91:1",
     intents: [
-      hasWon && <Button.Link href='https://warpcast.com/~/compose?text=Woohooo%21+Just+doubled+my+%24DEGEN+on+Degen+Flip.+Flip+coin+to+double+your+%24DEGEN+now%21+%2Fdegen-house-casino'>Share! (10% bonus)</Button.Link>,
-      <Button>
+      <Button.Link href='https://warpcast.com/~/compose?text=Woohooo%21+Just+doubled+my+%24DEGEN+on+Degen+Flip.+Flip+coin+to+double+your+%24DEGEN+now%21+%2Fdegen-house-casino'>Share! (10% bonus)</Button.Link>,
+      <Button.Reset>
         Play Again!
-      </Button>,
+      </Button.Reset>,
       <Button.Link href={`${blockExplorer}/tx/${finalizeTxn}`}>
         View on Degen Chain explorer
       </Button.Link>
@@ -202,6 +266,28 @@ app.transaction('/sponsor/:amount', async (c) => {
     value: parseEther(amount)
   })
 })
+
+type Bet = {
+  bettor: string,
+  action: string,
+  amount: string,
+  txnHash: string,
+  randHash: string,
+  pseudoHash: string,
+  hash: string,
+  hasWon: boolean,
+  finalizeTxn: string
+}
+
+async function saveToDb(data: Bet) {
+  try {
+    await prisma.bet.create({
+      data
+    });
+  } catch (e) {
+    console.log(e)
+  }
+}
 
 devtools(app, { serveStatic })
 
